@@ -58,6 +58,7 @@ class Board extends React.Component<BoardProps, {}> {
 
 interface HistoryData {
   squares: SquareArray;
+  location: number | null;
 }
 
 interface GameState {
@@ -72,7 +73,8 @@ class Game extends React.Component<{}, GameState> {
     this.state = {
       history: [
         {
-          squares: Array(9).fill(null)
+          squares: Array(9).fill(null),
+          location: null
         }
       ],
       stepNumber: 0,
@@ -88,7 +90,10 @@ class Game extends React.Component<{}, GameState> {
     }
     squares[i] = this.state.xIsNext ? "X" : "O";
     this.setState({
-      history: history.concat([{ squares: squares }]),
+      history: history.concat([{
+        squares: squares,
+        location: i
+      }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext
     });
@@ -108,11 +113,15 @@ class Game extends React.Component<{}, GameState> {
 
     const moves = history.map((step, move) => {
       const desc = move ? `Go to move #${move}` : "Go to game start";
-      // const location = ;
-      // {location}
+      let location = '';
+      if ('number' === typeof step.location) {
+        const loc_tuple = calculateColRow(step.location);
+        location = `(${loc_tuple[0]}, ${loc_tuple[1]})`
+      }
       return (
         <li key={move}>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          {location}
         </li>
       );
     });
@@ -138,8 +147,9 @@ class Game extends React.Component<{}, GameState> {
   }
 }
 
-// function calculateColRow(n: number) {
-// }
+function calculateColRow(n: number): [number, number] {
+  return [Math.floor(n / 3) + 1, (n + 1) % 3];
+}
 
 function calculateWinner(squares: SquareArray) {
   const lines = [
