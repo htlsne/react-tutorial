@@ -46,6 +46,37 @@ class Board extends React.Component<BoardProps, {}> {
   }
 }
 
+interface HistoryProps {
+  history: HistoryData[];
+  stepNumber: number;
+  jumpTo: (move: number) => void;
+}
+
+class History extends React.Component<HistoryProps, {}> {
+  render() {
+    const moves = this.props.history.map((step, move) => {
+      const desc = move ? `Go to move #${move}` : "Go to game start";
+      let location = "";
+      if ("number" === typeof step.location) {
+        const locTuple = calculateColRow(step.location);
+        location = `(${locTuple[0]}, ${locTuple[1]})`;
+      }
+      const style: React.CSSProperties =
+        this.props.stepNumber === move ? { fontWeight: "bold" } : {};
+      return (
+        <li key={move} style={style}>
+          <button onClick={() => this.props.jumpTo(move)} style={style}>
+            {desc}
+          </button>
+          {location}
+        </li>
+      );
+    });
+
+    return <ol>{moves}</ol>;
+  }
+}
+
 interface HistoryData {
   squares: SquareArray;
   location: number | null;
@@ -103,25 +134,6 @@ class Game extends React.Component<{}, GameState> {
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
-    const moves = history.map((step, move) => {
-      const desc = move ? `Go to move #${move}` : "Go to game start";
-      let location = "";
-      if ("number" === typeof step.location) {
-        const locTuple = calculateColRow(step.location);
-        location = `(${locTuple[0]}, ${locTuple[1]})`;
-      }
-      const style: React.CSSProperties =
-        this.state.stepNumber === move ? { fontWeight: "bold" } : {};
-      return (
-        <li key={move} style={style}>
-          <button onClick={() => this.jumpTo(move)} style={style}>
-            {desc}
-          </button>
-          {location}
-        </li>
-      );
-    });
-
     let status;
     if (winner) {
       status = `Winner: ${winner}`;
@@ -136,7 +148,11 @@ class Game extends React.Component<{}, GameState> {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{moves}</ol>
+          <History
+            history={this.state.history}
+            stepNumber={this.state.stepNumber}
+            jumpTo={move => this.jumpTo(move)}
+          />
         </div>
       </div>
     );
