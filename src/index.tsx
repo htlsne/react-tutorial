@@ -118,9 +118,10 @@ class Game extends React.Component<{}, GameState> {
         const loc_tuple = calculateColRow(step.location);
         location = `(${loc_tuple[0]}, ${loc_tuple[1]})`
       }
+      const style: React.CSSProperties = this.state.stepNumber == move ? {fontWeight: 'bold'} : {};
       return (
-        <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+        <li key={move} style={style}>
+          <button onClick={() => this.jumpTo(move)} style={style}>{desc}</button>
           {location}
         </li>
       );
