@@ -50,11 +50,18 @@ interface HistoryProps {
   history: HistoryData[];
   stepNumber: number;
   jumpTo: (move: number) => void;
+  reverseFlag: boolean;
 }
 
 class History extends React.Component<HistoryProps, {}> {
   render() {
-    const moves = this.props.history.map((step, move) => {
+    const indexedHistory = this.props.history.map((elem, index): [number, HistoryData] => [index, elem])
+    if (this.props.reverseFlag) {
+      indexedHistory.reverse();
+    }
+    const moves = indexedHistory.map(elem => {
+      const move = elem[0];
+      const step = elem[1];
       const desc = move ? `Go to move #${move}` : "Go to game start";
       let location = "";
       if ("number" === typeof step.location) {
@@ -73,7 +80,7 @@ class History extends React.Component<HistoryProps, {}> {
       );
     });
 
-    return <ol>{moves}</ol>;
+    return <ol reversed={this.props.reverseFlag}>{moves}</ol>;
   }
 }
 
@@ -86,6 +93,7 @@ interface GameState {
   history: HistoryData[];
   xIsNext: boolean;
   stepNumber: number;
+  reverseFlag: boolean;
 }
 
 class Game extends React.Component<{}, GameState> {
@@ -99,7 +107,8 @@ class Game extends React.Component<{}, GameState> {
         }
       ],
       stepNumber: 0,
-      xIsNext: true
+      xIsNext: true,
+      reverseFlag: false
     };
   }
 
@@ -120,6 +129,10 @@ class Game extends React.Component<{}, GameState> {
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext
     });
+  }
+
+  handleSort() {
+    this.setState({reverseFlag: !this.state.reverseFlag});
   }
 
   jumpTo(step: number) {
@@ -148,10 +161,12 @@ class Game extends React.Component<{}, GameState> {
         </div>
         <div className="game-info">
           <div>{status}</div>
+          <div><button onClick={() => this.handleSort()}>Toggle Order</button></div>
           <History
             history={this.state.history}
             stepNumber={this.state.stepNumber}
             jumpTo={move => this.jumpTo(move)}
+            reverseFlag={this.state.reverseFlag}
           />
         </div>
       </div>
