@@ -36,21 +36,11 @@ class Board extends React.Component<BoardProps, {}> {
   render() {
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        {range(0, 3).map(i => (
+          <div className="board-row">
+            {range(0, 3).map(j => this.renderSquare(3 * i + j))}
+          </div>
+        ))}
       </div>
     );
   }
@@ -90,10 +80,12 @@ class Game extends React.Component<{}, GameState> {
     }
     squares[i] = this.state.xIsNext ? "X" : "O";
     this.setState({
-      history: history.concat([{
-        squares: squares,
-        location: i
-      }]),
+      history: history.concat([
+        {
+          squares: squares,
+          location: i
+        }
+      ]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext
     });
@@ -113,15 +105,18 @@ class Game extends React.Component<{}, GameState> {
 
     const moves = history.map((step, move) => {
       const desc = move ? `Go to move #${move}` : "Go to game start";
-      let location = '';
-      if ('number' === typeof step.location) {
+      let location = "";
+      if ("number" === typeof step.location) {
         const loc_tuple = calculateColRow(step.location);
-        location = `(${loc_tuple[0]}, ${loc_tuple[1]})`
+        location = `(${loc_tuple[0]}, ${loc_tuple[1]})`;
       }
-      const style: React.CSSProperties = this.state.stepNumber == move ? {fontWeight: 'bold'} : {};
+      const style: React.CSSProperties =
+        this.state.stepNumber == move ? { fontWeight: "bold" } : {};
       return (
         <li key={move} style={style}>
-          <button onClick={() => this.jumpTo(move)} style={style}>{desc}</button>
+          <button onClick={() => this.jumpTo(move)} style={style}>
+            {desc}
+          </button>
           {location}
         </li>
       );
@@ -171,6 +166,9 @@ function calculateWinner(squares: SquareArray) {
   }
   return null;
 }
+
+const range = (start: number, stop: number, step = 1) =>
+  Array.from({ length: (stop - start) / step }, (_, i) => start + i * step);
 
 // ========================================
 
