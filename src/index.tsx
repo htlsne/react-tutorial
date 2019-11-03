@@ -58,8 +58,8 @@ interface GameState {
 }
 
 class Game extends React.Component<{}, GameState> {
-  constructor() {
-    super({});
+  constructor(props: any) {
+    super(props);
     this.state = {
       history: [
         {
@@ -107,11 +107,11 @@ class Game extends React.Component<{}, GameState> {
       const desc = move ? `Go to move #${move}` : "Go to game start";
       let location = "";
       if ("number" === typeof step.location) {
-        const loc_tuple = calculateColRow(step.location);
-        location = `(${loc_tuple[0]}, ${loc_tuple[1]})`;
+        const locTuple = calculateColRow(step.location);
+        location = `(${locTuple[0]}, ${locTuple[1]})`;
       }
       const style: React.CSSProperties =
-        this.state.stepNumber == move ? { fontWeight: "bold" } : {};
+        this.state.stepNumber === move ? { fontWeight: "bold" } : {};
       return (
         <li key={move} style={style}>
           <button onClick={() => this.jumpTo(move)} style={style}>
