@@ -41,7 +41,7 @@ interface SquareProps {
   highlight: boolean;
 }
 
-function Square(props: SquareProps): JSX.Element {
+const Square: React.FunctionComponent<SquareProps> = props => {
   const buttonClass = classNames("square", {
     "square-highlight": props.highlight
   });
@@ -50,7 +50,7 @@ function Square(props: SquareProps): JSX.Element {
       {props.value}
     </button>
   );
-}
+};
 
 interface BoardProps {
   squares: SquareArray;
@@ -68,7 +68,7 @@ class Board extends React.Component<BoardProps, {}> {
     }
   }
 
-  renderSquare(i: number): JSX.Element {
+  renderSquare(i: number): React.ReactNode {
     return (
       <Square
         value={this.props.squares[i]}
@@ -79,7 +79,7 @@ class Board extends React.Component<BoardProps, {}> {
     );
   }
 
-  render(): JSX.Element {
+  render(): React.ReactNode {
     return (
       <div>
         {range(0, 3).map(i => (
@@ -100,7 +100,7 @@ interface HistoryProps {
 }
 
 class History extends React.Component<HistoryProps, {}> {
-  render(): JSX.Element {
+  render(): React.ReactNode {
     const indexedHistory = this.props.history.map((elem, index): [
       number,
       HistoryData
@@ -191,7 +191,7 @@ class Game extends React.Component<{}, GameState> {
     });
   }
 
-  render(): JSX.Element {
+  render(): React.ReactNode {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const [winner, line] = calculateWinner(current.squares);
@@ -199,7 +199,7 @@ class Game extends React.Component<{}, GameState> {
     let status;
     if (winner) {
       status = `Winner: ${winner}`;
-    } else if (!winner && this.state.stepNumber == 9) {
+    } else if (!winner && this.state.stepNumber === 9) {
       status = "Draw";
     } else {
       status = `Next player: ${this.state.xIsNext ? "X" : "O"}`;
